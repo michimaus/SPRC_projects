@@ -1,0 +1,67 @@
+# DUICAN MIHNEA 343 C1
+
+version: '3'
+
+services:
+
+  sprc_postgres:
+    hostname: "${DB_HOSTNAME}"
+    image: postgres:14.1-alpine
+    # ports:
+    #   - "${DB_PORT}:${DB_PORT}"
+    environment:
+      - "POSTGRES_PASSWORD=${DB_PASSWORD}"
+    networks:
+      - rest_api_network
+      - db_management_network
+    restart: always
+
+
+  sprc_pg_admin:
+    image: dpage/pgadmin4:6.3
+    restart: always
+    depends_on:
+      - sprc_postgres
+    ports:
+      - "${DB_ADMIN_EXPOSE_PORT}:${DB_ADMIN_LISTEN_PORT}"
+    networks:
+      - db_management_network
+    environment:
+      - "PGADMIN_DEFAULT_EMAIL=${DB_ADMIN_EMAIL}"
+      - "PGADMIN_DEFAULT_PASSWORD=${DB_ADMIN_PASS}"
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+
+
+  sprc_rest_api:
+    image: sprc_rest_api
+    ports:
+      - "${REST_API_PORT}:${REST_API_PORT}"
+    networks:
+      - rest_api_network
+    depends_on:
+      - sprc_postgres
+      - sprc_pg_admin
+    build:
+      context: ./tema2_rest_api
+      dockerfile: rest_api.Dockerfile
+      args:
+        - DB_PASSWORD=${DB_PASSWORD}
+        - DB_USERNAME=${DB_USERNAME}
+        - DB_NAME=${DB_NAME}
+        - DB_HOSTNAME=${DB_HOSTNAME}
+        - DB_PORT=${DB_PORT}
+        - REST_API_PORT=${REST_API_PORT}
+    restart: always
+    environment:
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_NAME=${DB_NAME}
+      - DB_HOSTNAME=${DB_HOSTNAME}
+      - DB_PORT=${DB_PORT}
+      - REST_API_PORT=${REST_API_PORT}
+
+networks:
+  rest_api_network: {}
+  db_management_network: {}
+

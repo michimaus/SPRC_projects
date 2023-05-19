@@ -1,0 +1,37 @@
+DUICAN MIHNEA - IONUȚ 343 C1
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TEMA 2 SPRC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TECHNOLOGIES USED (in terms of services):
+ - PostgreSQL, relational database in order to keep persistently the information
+ - Django + Django Rest Framework + PsycoPG2 as a code base including API endpoints structures,
+   serialization features and last but not least ORM for easy access to the database
+   * Used pipenv as pack managing environment, which stands detached from the solution folder and keeping
+     track of the dependencies needed using the pipfile & pipfile.lock files.
+   * Implemented the endpoint routing in ./tema2_rest_api/urls.py
+   * Django comes by default with a feature for declaring configurations on startup, and in that case
+     I made use of the default settings file, located at ./tema2_rest_api/settings.py, where the most
+     noticeable touch would be configuring the PostgreSQL connection setup.
+   * Most of the codebase is located in ./api_app/ folder, included here model classes, mapping
+     automatically to DB tables, serializers used to check the integrity and correctness of JSON data
+     coming in via endpoints, views form django_rest_framework handling the business logic.
+ - PGAdmin4 offering a lightweight solution-maker as a database managing tool
+
+In order to run the solution, just execute "docker-compose up" in the root directory of my archive,
+where the docker-compose.yml would be located.
+
+There is .env file, which is automatically recognized by docker-compose, where I had declared a small
+number of environment variables which are strictly required in order to configure the run arguments of
+the containers and the settings for the coding based solution.
+
+DB Admin is exposed on port 8080, likewise the django side is exposed on port 6000. Each of the containers
+mentioned before is placed on a separate network, as it stands in docker-compose.yml.
+PostgreSQL container is not exposed over the bridge, but takes part in both networks in order to
+satisfy requests coming from both the REST Api and PGAdmin4.
+
+Connection credentials for PGAdmin4 can be found in .env, as it also the password. I linked a volume
+"services.json" to this container in order to preconfigure the DB connection, located at
+SERVER_GROUP_SPRC_TEMA2_DB, un the upper left corner. The password for PostgreSQL will be required
+each time this configuration gets a new run.
+
+
